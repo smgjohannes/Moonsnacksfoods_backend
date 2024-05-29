@@ -5,6 +5,7 @@ const db = require('./app/models');
 const { start } = require('./app/express');
 const app = require('./app/services');
 
+global.__basedir = __dirname;
 const port = process.env.NODE_ENV === 'production' ? process.env.PORT : 4343;
 
 /** HANDLE UNCAUGHT EXCEPTION */

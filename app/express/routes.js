@@ -3,7 +3,7 @@ const express = require('express');
 const UserController = require('./controllers/userController');
 const PostController = require('./controllers/postController');
 const EventController = require('./controllers/eventController');
-
+const ImageController = require('./controllers/imageController');
 // validators
 const userValidation = require('./validations/userValidation');
 const postValidation = require('./validations/postValidation');
@@ -16,7 +16,6 @@ const CorsMiddleware = require('./middleware/corsMiddleware');
 // Simple middleware
 const adminMiddleware = require('./middleware/adminMiddleware');
 const rateLimitMiddleware = require('./middleware/rateLimitMiddleware');
-const resizeImageMiddleware = require('./middleware/resizeImageMiddleware');
 
 const upload = require('../utils/multer');
 
@@ -31,7 +30,7 @@ function getRoutes(app) {
   const userController = UserController(app);
   const postController = PostController(app);
   const eventController = EventController(app);
-
+  const imageController = ImageController(app);
   const router = express.Router();
 
   // enable cross origin requests
@@ -92,7 +91,15 @@ function getRoutes(app) {
       eventController.update
     )
     .delete(authMiddleware, eventController.destroy);
+  // IMAGE ROUTES
+  router.post(
+    '/images/:entity_id',
+    authMiddleware,
+    upload.manyFiles(),
+    imageController.upload
+  );
 
+  router.delete('/images/:id', authMiddleware, imageController.destroy);
   // USER
   router.get('/users', authMiddleware, adminMiddleware, userController.get);
   router

@@ -11,7 +11,6 @@ class Event {
     this.image = image;
   }
 }
-
 Event.prototype.get = get;
 Event.prototype.getById = getById;
 Event.prototype.create = create;

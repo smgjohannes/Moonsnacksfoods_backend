@@ -20,7 +20,7 @@ async function destroy(id, res) {
 
     if (post.Images && post.Images.length > 0) {
       for (let img of post.Images) {
-        await imageService.destroy(img.id);
+        await this.image.destroy(img.id);
       }
     }
 

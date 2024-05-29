@@ -35,7 +35,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      path: {
+      type: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      directory: {
         type: DataTypes.TEXT,
         allowNull: true,
       },

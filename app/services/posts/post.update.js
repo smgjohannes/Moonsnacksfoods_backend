@@ -1,14 +1,12 @@
 const db = require('../../models');
-const handleDatabaseError = require('../../utils/errorHandlers');
-const imageService = require('../image/actions/image.destroy'); // Ensure the path is correct
-const imageUploadService = require('../image/actions/image.upload');
+const { Error400 } = require('../../utils/httpErrors');
 
 async function update(id, data, req) {
   try {
     const post = await db.Post.findByPk(id, {
       include: {
         model: db.Image,
-        attributes: ['id', 'url', 'path'],
+        attributes: ['id', 'url', 'type'],
       },
     });
 
@@ -22,18 +20,17 @@ async function update(id, data, req) {
       // Delete existing images
       if (post.Images && post.Images.length > 0) {
         for (let img of post.Images) {
-          await imageService.destroy(img.id);
+          await this.image.destroy(img.id);
         }
       }
 
       // Upload new images
-      await imageUploadService.upload(req, 'Post', post.id, req.files);
+      await this.image.upload(req, 'Post', post.id, req.files);
     }
 
     return post;
   } catch (error) {
-    handleDatabaseError(error);
-    throw error;
+    throw new Error400(error);
   }
 }
 

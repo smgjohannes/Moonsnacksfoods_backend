@@ -1,19 +1,17 @@
 const db = require('../../models');
-const handleDatabaseError = require('../../utils/errorHandlers');
-const imageService = require('../image/actions/image.destroy'); // Ensure the path is correct
-const imageUploadService = require('../image/actions/image.upload');
+const { Error404, Error400 } = require('../../utils/httpErrors');
 
 async function update(id, data, req) {
   try {
     const event = await db.Event.findByPk(id, {
       include: {
         model: db.Image,
-        attributes: ['id', 'url', 'path'],
+        attributes: ['id', 'url', 'type'],
       },
     });
 
     if (!event) {
-      throw new Error('Event not found');
+      throw new Error404('Event not found');
     }
 
     await event.update(data);
@@ -22,18 +20,17 @@ async function update(id, data, req) {
       // Delete existing images
       if (event.Images && event.Images.length > 0) {
         for (let img of event.Images) {
-          await imageService.destroy(img.id);
+          await this.image.destroy(img.id);
         }
       }
 
       // Upload new images
-      await imageUploadService.upload(req, ' Event', event.id, req.files);
+      await this.image.upload(req, ' Event', event.id, req.files);
     }
 
     return event;
   } catch (error) {
-    handleDatabaseError(error);
-    throw error;
+    throw new Error400(error.message);
   }
 }
 

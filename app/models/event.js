@@ -18,11 +18,16 @@ module.exports = (sequelize, DataTypes) => {
 
   Event.init(
     {
-      title: DataTypes.STRING,
-      location: DataTypes.STRING,
-      description: DataTypes.STRING,
-      start_date: DataTypes.DATE,
-      end_date: DataTypes.DATE,
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      title: { type: DataTypes.STRING, allowNull: false },
+      location: { type: DataTypes.STRING, allowNull: false },
+      description: { type: DataTypes.STRING, allowNull: false },
+      start_date: { type: DataTypes.DATE, allowNull: false },
+      end_date: { type: DataTypes.DATE, allowNull: false },
       status: {
         type: DataTypes.ENUM,
         values: ['draft', 'published'],

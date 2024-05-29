@@ -9,20 +9,19 @@ const { Error400 } = require('../../../utils/httpErrors');
  * @param {Array} id - image id.
  * @returns {Promise} Return the created images.
  * @example
- * const destroy = await central.image.upload({}, 'Post', '375223b3-71c6-4b61-a346-0a9d5baf12b4', [{}]);
+ * const destroy = await app.image.upload({}, 'Post', '375223b3-71c6-4b61-a346-0a9d5baf12b4', [{}]);
  */
 async function upload(req, entityModel, entityId, files) {
   // Ensure at least one image is provided
   if (files.length === 0) {
-    throw new BadParameters('No files provided.');
+    throw new BadParameters(`No files provided.`);
   }
 
   const entity = await db[entityModel].findByPk(entityId, {
-    attributes: ['id'],
     include: [
       {
         model: db.Image,
-        attributes: ['id', 'name', 'url', 'path'],
+        attributes: ['id', 'name', 'url', 'type', 'directory'],
       },
     ],
   });
@@ -33,46 +32,52 @@ async function upload(req, entityModel, entityId, files) {
 
   try {
     for (let file of files) {
-      // Ensure entity and entityModel are defined
-      if (!entity || !entity.id || !entityModel) {
-        throw new Error('Entity or entityModel is not defined');
-      }
+      // folder name
+      const folder = entity.slug ? entity.slug : 'images';
 
-      // Create the image with required attributes
-      let image = await entity.createImage({
-        imageable_id: entity.id,
-        imageable_type: entityModel.toLowerCase(),
+      // create the directory
+      const directory = fse.mkdirsSync(`${__basedir}/uploads/${folder}`);
+      // save image
+      const image = await entity.createImage({
         type: file.mimetype,
         name: file.originalname,
+        directory: folder,
       });
 
-      // Construct the file path
-      const filePath = `${req.protocol}://${req.get('host')}/../../../uploads/${
-        file.filename
-      }`;
+      // read image content
+      let content = fs.readFileSync(`${__basedir}/uploads/${file.filename}`);
+      // convert image data to base64
+      let base64 = content.toString('base64');
 
-      // Update image URL and path
-      image.url = filePath;
-      image.path = `/../../../uploads/${file.filename}`;
+      // buffer the converted image data
+      let data = Buffer.from(base64, 'base64');
 
-      // Save the image
+      // in case the folder already exist
+      if (directory) {
+        fs.writeFileSync(`${directory}/${image.name}`, data);
+      } else {
+        // when the folder does not exist
+        fs.writeFileSync(`${__basedir}/uploads/${folder}/${image.name}`, data);
+      }
+
+      // create image url
+      const imageUrl = `${req.protocol}://${req.get(
+        'host'
+      )}/uploads/${folder}/${file.originalname}`;
+
+      // update image url
+      image.url = imageUrl;
+      // save
       await image.save();
+
+      // delete file from the system after saving
+      fs.unlinkSync(`${__basedir}/uploads/${file.filename}`);
     }
 
-    return entity;
+    return entity.reload();
   } catch (e) {
-    console.log('Error:', e.message);
-    if (e instanceof TypeError) {
-      throw new Error400(
-        'TypeError: There was an issue with the data types while uploading images.'
-      );
-    } else if (e instanceof Sequelize.ValidationError) {
-      throw new Error400(
-        'ValidationError: Image data did not pass validation.'
-      );
-    } else {
-      throw new Error400('Error: We could not upload images.');
-    }
+    console.log(e);
+    throw new Error400('Error we could not upload images.');
   }
 }
 

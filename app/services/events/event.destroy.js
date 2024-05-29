@@ -1,6 +1,5 @@
 const db = require('../../models');
-const handleDatabaseError = require('../../utils/errorHandlers');
-const imageService = require('../image/actions/image.destroy'); // Adjust path as necessary
+const { Error400 } = require('../../utils/httpErrors');
 
 async function destroy(id, res) {
   try {
@@ -8,7 +7,7 @@ async function destroy(id, res) {
       where: { id },
       include: {
         model: db.Image,
-        attributes: ['id', 'url', 'path'],
+        attributes: ['id', 'url', 'type'],
       },
     });
 
@@ -20,15 +19,14 @@ async function destroy(id, res) {
 
     if (event.Images && event.Images.length > 0) {
       for (let img of event.Images) {
-        await imageService.destroy(img.id);
+        await this.image.destroy(img.id);
       }
     }
 
     await event.destroy();
     return { message: 'event and associated images deleted successfully.' };
   } catch (error) {
-    handleDatabaseError(error, res);
-    throw error;
+    throw new Error400(error.message);
   }
 }
 
