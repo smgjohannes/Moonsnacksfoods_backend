@@ -12,5 +12,7 @@
   "20240522085819-add-published-to-events.js",
   "20240530100411-change-id-to-uuid.js",
   "20240530103435-change_events_primary_from_int_to_uuid.js",
-  "20240530124841-add-end-date-to-event-table.js"
+  "20240530124841-add-end-date-to-event-table.js",
+  "20240530143536-create_testimonial_table.js",
+  "20240530144027-create_archive_table.js"
 ]
