@@ -1,12 +1,14 @@
+const fs = require('fs');
 const db = require('../../models');
 const { Error400 } = require('../../utils/httpErrors');
+const { upload } = require('../image/actions/image.upload');
 
 async function update(id, data, req) {
   try {
     const post = await db.Post.findByPk(id, {
       include: {
         model: db.Image,
-        attributes: ['id', 'url', 'type'],
+        attributes: ['id', 'url', 'type', 'directory', 'name'],
       },
     });
 
@@ -20,17 +22,27 @@ async function update(id, data, req) {
       // Delete existing images
       if (post.Images && post.Images.length > 0) {
         for (let img of post.Images) {
-          await this.image.destroy(img.id);
+          // Construct the file path
+          const filePath = `${__basedir}/uploads/${img.directory}/${img.name}`;
+
+          // Delete the file from the file system
+          if (fs.existsSync(filePath)) {
+            fs.promises.unlink(filePath);
+          }
+
+          // Delete the image from the database
+          await db.Image.destroy({ where: { id: img.id } });
         }
       }
 
       // Upload new images
-      await this.image.upload(req, 'Post', post.id, req.files);
+      await upload(req, 'Post', post.id, req.files);
     }
 
     return post;
   } catch (error) {
-    throw new Error400(error);
+    console.error(error);
+    throw new Error400(error.message);
   }
 }
 

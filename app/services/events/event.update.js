@@ -1,17 +1,19 @@
+const fs = require('fs');
 const db = require('../../models');
-const { Error404, Error400 } = require('../../utils/httpErrors');
+const { Error400 } = require('../../utils/httpErrors');
+const { upload } = require('../image/actions/image.upload');
 
 async function update(id, data, req) {
   try {
     const event = await db.Event.findByPk(id, {
       include: {
         model: db.Image,
-        attributes: ['id', 'url', 'type'],
+        attributes: ['id', 'url', 'type', 'directory', 'name'],
       },
     });
 
     if (!event) {
-      throw new Error404('Event not found');
+      throw new Error('Event not found');
     }
 
     await event.update(data);
@@ -20,16 +22,26 @@ async function update(id, data, req) {
       // Delete existing images
       if (event.Images && event.Images.length > 0) {
         for (let img of event.Images) {
-          await this.image.destroy(img.id);
+          // Construct the file path
+          const filePath = `${__basedir}/uploads/${img.directory}/${img.name}`;
+
+          // Delete the file from the file system
+          if (fs.existsSync(filePath)) {
+            fs.promises.unlink(filePath);
+          }
+
+          // Delete the image from the database
+          await db.Image.destroy({ where: { id: img.id } });
         }
       }
 
       // Upload new images
-      await this.image.upload(req, ' Event', event.id, req.files);
+      await upload(req, 'Event', event.id, req.files);
     }
 
     return event;
   } catch (error) {
+    console.error(error);
     throw new Error400(error.message);
   }
 }

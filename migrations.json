@@ -9,5 +9,8 @@
   "20240521134515-amend-events-fields.js",
   "20240521140247-amend-events-timestamp-fields.js",
   "20240522083845-amend-events-status-list-fields.js",
-  "20240522085819-add-published-to-events.js"
+  "20240522085819-add-published-to-events.js",
+  "20240530100411-change-id-to-uuid.js",
+  "20240530103435-change_events_primary_from_int_to_uuid.js",
+  "20240530124841-add-end-date-to-event-table.js"
 ]

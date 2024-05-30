@@ -4,9 +4,21 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
     static associate(models) {
-      Image.belongsTo(models.Image, {
+      Image.belongsTo(models.Event, {
         foreignKey: 'imageable_id',
         constraints: false,
+        as: 'event',
+        scope: {
+          imageable_type: 'event',
+        },
+      });
+      Image.belongsTo(models.Post, {
+        foreignKey: 'imageable_id',
+        constraints: false,
+        as: 'post',
+        scope: {
+          imageable_type: 'post',
+        },
       });
     }
   }
@@ -54,9 +66,14 @@ module.exports = (sequelize, DataTypes) => {
   Image.addHook('afterFind', (findResult) => {
     if (!Array.isArray(findResult)) findResult = [findResult];
     for (const instance of findResult) {
-      if (instance.imageable_type === 'image' && instance.image !== undefined);
-      delete instance.imageable;
-      delete instance.dataValues.image;
+      if (instance.imageable_type === 'event' && instance.event !== undefined) {
+        delete instance.imageable;
+        delete instance.dataValues.imageable;
+      }
+      if (instance.imageable_type === 'post' && instance.post !== undefined) {
+        delete instance.imageable;
+        delete instance.dataValues.imageable;
+      }
     }
   });
 
