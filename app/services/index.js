@@ -8,6 +8,10 @@ const Posts = require('./posts');
 const Image = require('./image');
 const Token = require('./token');
 const Events = require('./events');
+const Tastimonials = require('./testimonials');
+const Archives = require('./archives');
+const Testimonial = require('./testimonials');
+const Archive = require('./archives');
 
 /**
  * @description Start a new App instance.
@@ -23,6 +27,8 @@ function App(params = {}) {
   const users = new Users(token, image);
   const posts = new Posts(image);
   const events = new Events(image);
+  const testimonials = new Testimonial(image);
+  const archives = new Archive(image);
 
   const _app = {
     config,
@@ -31,6 +37,8 @@ function App(params = {}) {
     posts,
     token,
     events,
+    testimonials,
+    archives,
     start: async () => {
       // set wal mode
       await db.sequelize

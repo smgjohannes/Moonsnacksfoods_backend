@@ -23,7 +23,7 @@ async function destroy(id, res) {
       }
     }
 
-    await archive.edestroy();
+    await archive.destroy();
     return { message: 'Archive and associated images deleted successfully.' };
   } catch (error) {
     throw new Error400(error.message);

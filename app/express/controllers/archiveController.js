@@ -1,11 +1,11 @@
 const asyncMiddleware = require('../middleware/asyncMiddleware');
 const archiveService = require('../../services/archives/archive.update');
+
 module.exports = function archiveController(app) {
   /**
-   * @api {get} /api/v1/archives
-   * @apiName get
-   * @apiGroup archive
-   *
+   * @api {event} /api/v1/events
+   * @apiName create
+   * @apiGroup event
    */
   async function get(req, res) {
     const response = await app.archives.get(req.query);

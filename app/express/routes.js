@@ -93,7 +93,7 @@ function getRoutes(app) {
     .patch(
       authMiddleware,
       upload.manyFiles(),
-      commonValidation.eventCreateSchema,
+      commonValidation.eventUpdateSchema,
       eventController.update
     )
     .delete(authMiddleware, eventController.destroy);
@@ -104,7 +104,12 @@ function getRoutes(app) {
   router
     .route('/archives')
     .get(archiveController.get)
-    .post(authMiddleware, upload.manyFiles(), ar, archiveController.create);
+    .post(
+      authMiddleware,
+      upload.manyFiles(),
+      archiveValidation.archiveCreateSchema,
+      archiveController.create
+    );
 
   router
     .route('/archives/:id')
@@ -116,13 +121,19 @@ function getRoutes(app) {
       archiveController.update
     )
     .delete(authMiddleware, archiveController.destroy);
+
   //TESTIMONIALS ROUTERS
 
   router.get('/testimonials/getBySlug/:slug', testimonialController.getBySlug);
   router
     .route('/testimonials')
     .get(testimonialController.get)
-    .post(authMiddleware, upload.manyFiles(), ar, testimonialController.create);
+    .post(
+      authMiddleware,
+      upload.manyFiles(),
+      testimonialValidation.testimonialCreateSchema,
+      testimonialController.create
+    );
 
   router
     .route('/testimonials/:id')

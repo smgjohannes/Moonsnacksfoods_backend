@@ -20,6 +20,22 @@ module.exports = (sequelize, DataTypes) => {
           imageable_type: 'post',
         },
       });
+      Image.belongsTo(models.Archive, {
+        foreignKey: 'imageable_id',
+        constraints: false,
+        as: 'archive',
+        scope: {
+          imageable_type: 'archive',
+        },
+      });
+      Image.belongsTo(models.Testimonial, {
+        foreignKey: 'imageable_id',
+        constraints: false,
+        as: 'testimonial',
+        scope: {
+          imageable_type: 'testimonial',
+        },
+      });
     }
   }
 
@@ -71,6 +87,20 @@ module.exports = (sequelize, DataTypes) => {
         delete instance.dataValues.imageable;
       }
       if (instance.imageable_type === 'post' && instance.post !== undefined) {
+        delete instance.imageable;
+        delete instance.dataValues.imageable;
+      }
+      if (
+        instance.imageable_type === 'archive' &&
+        instance.archive !== undefined
+      ) {
+        delete instance.imageable;
+        delete instance.dataValues.imageable;
+      }
+      if (
+        instance.imageable_type === 'testimonial' &&
+        instance.testimonial !== undefined
+      ) {
         delete instance.imageable;
         delete instance.dataValues.imageable;
       }

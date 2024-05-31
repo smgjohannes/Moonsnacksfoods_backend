@@ -23,7 +23,7 @@ async function destroy(id, res) {
       }
     }
 
-    await testimonial.edestroy();
+    await testimonial.destroy();
     return {
       message: 'Testimonial and associated images deleted successfully.',
     };
