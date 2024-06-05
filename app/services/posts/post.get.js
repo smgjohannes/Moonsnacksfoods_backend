@@ -3,7 +3,17 @@ const Sequelize = require('sequelize');
 const db = require('../../models');
 
 const DEFAULT_OPTIONS = {
-  fields: ['id', 'title', 'slug', 'body', 'status', 'created_at', 'updated_at'],
+  fields: [
+    'id',
+    'title',
+    'short_description',
+    'description',
+    'slug',
+    'overlay_text',
+    'status',
+    'created_at',
+    'updated_at',
+  ],
   skip: 0,
   order_dir: 'ASC',
   order_by: 'id',
@@ -38,7 +48,14 @@ async function get(options) {
         Sequelize.where(Sequelize.fn('lower', Sequelize.col('title')), {
           [Op.like]: `%${optionsWithDefault.search}%`,
         }),
-        Sequelize.where(Sequelize.fn('lower', Sequelize.col('body')), {
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('shortDescription')),
+          {
+            [Op.like]: `%${optionsWithDefault.search}%`,
+          }
+        ),
+
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('description')), {
           [Op.like]: `%${optionsWithDefault.search}%`,
         }),
         Sequelize.where(Sequelize.fn('lower', Sequelize.col('status')), {

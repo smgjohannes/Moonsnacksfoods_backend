@@ -12,16 +12,23 @@ module.exports = function UserController(app) {
    *
    */
   async function login(req, res) {
-    const user = await app.users.login(req.body);
-
-    const scope = req.body.scope || ['post:write', 'post:read', 'post:delete'];
-    const token = await app.token.create(
-      user.id,
-      scope,
-      LOGIN_TOKEN_VALIDITY_IN_SECONDS,
-      req.headers['user-agent']
-    );
-    res.json(token);
+    try {
+      const user = await app.users.login(req.body);
+      const scope = req.body.scope || [
+        'post:write',
+        'post:read',
+        'post:delete',
+      ];
+      const token = await app.token.create(
+        user.id,
+        scope,
+        LOGIN_TOKEN_VALIDITY_IN_SECONDS,
+        req.headers['user-agent']
+      );
+      res.json({ success: true, token }); // Make sure this structure is used
+    } catch (error) {
+      res.status(401).json({ success: false, message: error.message });
+    }
   }
 
   /**

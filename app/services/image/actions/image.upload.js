@@ -12,6 +12,7 @@ const { Error400 } = require('../../../utils/httpErrors');
  * const destroy = await app.image.upload({}, 'Post', '375223b3-71c6-4b61-a346-0a9d5baf12b4', [{}]);
  */
 async function upload(req, entityModel, entityId, files) {
+  console.log('Received files:', files);
   if (files.length === 0) {
     throw new BadParameters(`No files provided.`);
   }

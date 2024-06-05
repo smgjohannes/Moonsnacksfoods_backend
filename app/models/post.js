@@ -17,14 +17,30 @@ module.exports = (sequelize, DataTypes) => {
   Post.init(
     {
       id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      title: { type: DataTypes.STRING, allowNull: false },
-      slug: { type: DataTypes.STRING, allowNull: true },
-      body: { type: DataTypes.STRING, allowNull: true },
-      image_url: { type: DataTypes.STRING, allowNull: true },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      short_description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      overlay_text: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       status: {
         type: DataTypes.ENUM,
         values: ['draft', 'published'],
