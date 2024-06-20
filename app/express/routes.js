@@ -1,18 +1,15 @@
 const express = require('express');
 
 const UserController = require('./controllers/userController');
-const PostController = require('./controllers/postController');
-const EventController = require('./controllers/eventController');
+const MemberController = require('./controllers/memberController');
+const PaymentController = require('./controllers/paymentController');
+
 const ImageController = require('./controllers/imageController');
-const ArchiveController = require('./controllers/archiveController');
-const TestimonialController = require('./controllers/testimonialController');
+
 // validators
 const userValidation = require('./validations/userValidation');
-const postValidation = require('./validations/postValidation');
-const commonValidation = require('./validations/commonValidation');
-const testimonialValidation = require('./validations/testimonialValidation');
-const archiveValidation = require('./validations/archiveValidation');
-
+const memberValidation = require('./validations/memberValidation');
+const paymentValidation = require('./validations/paymentValidation');
 // Middleware with dependence
 const AuthMiddleware = require('./middleware/authMiddleware');
 const CorsMiddleware = require('./middleware/corsMiddleware');
@@ -32,11 +29,11 @@ const upload = require('../utils/multer');
  */
 function getRoutes(app) {
   const userController = UserController(app);
-  const postController = PostController(app);
-  const eventController = EventController(app);
+  const memberController = MemberController(app);
+  const paymentController = PaymentController(app);
+
   const imageController = ImageController(app);
-  const testimonialController = TestimonialController(app);
-  const archiveController = ArchiveController(app);
+
   const router = express.Router();
 
   // enable cross origin requests
@@ -52,99 +49,28 @@ function getRoutes(app) {
     userController.login
   );
 
-  router.get('/posts/getBySlug/:slug', postController.getBySlug);
+  router.get('/members/getBySlug/:slug', memberController.getBySlug);
   router
-    .route('/posts')
-    .get(postController.get)
+    .route('/members')
+    .get(memberController.get)
     .post(
       authMiddleware,
       upload.manyFiles(),
-      postValidation.createSchema,
-      postController.create
+      memberValidation.createSchema,
+      memberController.create
     );
 
   router
-    .route('/posts/:id')
-    .get(postController.getById)
+    .route('/members/:id')
+    .get(memberController.getById)
     .patch(
       authMiddleware,
       upload.manyFiles(),
-      postValidation.updateSchema,
-      postController.update
+      memberValidation.updateSchema,
+      memberController.update
     )
-    .delete(authMiddleware, postController.destroy);
+    .delete(authMiddleware, memberController.destroy);
 
-  //EVENT ROUTERS
-
-  router.get('/events/getBySlug/:slug', eventController.getBySlug);
-  router
-    .route('/events')
-    .get(eventController.get)
-    .post(
-      authMiddleware,
-      upload.manyFiles(),
-      commonValidation.eventCreateSchema,
-      eventController.create
-    );
-
-  router
-    .route('/events/:id')
-    .get(eventController.getById)
-    .patch(
-      authMiddleware,
-      upload.manyFiles(),
-      commonValidation.eventUpdateSchema,
-      eventController.update
-    )
-    .delete(authMiddleware, eventController.destroy);
-
-  //Archive ROUTERS
-
-  router.get('/archives/getBySlug/:slug', archiveController.getBySlug);
-  router
-    .route('/archives')
-    .get(archiveController.get)
-    .post(
-      authMiddleware,
-      upload.manyFiles(),
-      archiveValidation.archiveCreateSchema,
-      archiveController.create
-    );
-
-  router
-    .route('/archives/:id')
-    .get(archiveController.getById)
-    .patch(
-      authMiddleware,
-      upload.manyFiles(),
-      archiveValidation.archiveUpdateSchema,
-      archiveController.update
-    )
-    .delete(authMiddleware, archiveController.destroy);
-
-  //TESTIMONIALS ROUTERS
-
-  router.get('/testimonials/getBySlug/:slug', testimonialController.getBySlug);
-  router
-    .route('/testimonials')
-    .get(testimonialController.get)
-    .post(
-      authMiddleware,
-      upload.manyFiles(),
-      testimonialValidation.testimonialCreateSchema,
-      testimonialController.create
-    );
-
-  router
-    .route('/testimonials/:id')
-    .get(testimonialController.getById)
-    .patch(
-      authMiddleware,
-      upload.manyFiles(),
-      testimonialValidation.testimonialUpdateSchema,
-      testimonialController.update
-    )
-    .delete(authMiddleware, testimonialController.destroy);
   // IMAGE ROUTES
   router.post(
     '/images/:entity_id',
@@ -154,6 +80,29 @@ function getRoutes(app) {
   );
 
   router.delete('/images/:id', authMiddleware, imageController.destroy);
+
+  // payments ROUTES
+  router.get('/payments/getBySlug/:slug', paymentController.getBySlug);
+  router
+    .route('/payments')
+    .get(paymentController.get)
+    .post(
+      authMiddleware,
+      upload.manyFiles(),
+      paymentValidation.createSchema,
+      paymentController.create
+    );
+
+  router
+    .route('/payments/:id')
+    .get(paymentController.getById)
+    .patch(
+      authMiddleware,
+      upload.manyFiles(),
+      paymentValidation.updateSchema,
+      paymentController.update
+    )
+    .delete(authMiddleware, paymentController.destroy);
   // USER
   router.get('/users', authMiddleware, adminMiddleware, userController.get);
   router

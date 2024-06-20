@@ -5,7 +5,6 @@ const passwordUtils = require('../utils/password');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // user can have many notifications
       User.hasMany(models.Token, {
         foreignKey: 'user_id',
         sourceKey: 'id',
@@ -13,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+
   User.init(
     {
       id: {
@@ -39,11 +39,21 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 'user',
       },
+
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       sequelize,
       tableName: 'users',
       modelName: 'User',
+      underscored: true,
     }
   );
 

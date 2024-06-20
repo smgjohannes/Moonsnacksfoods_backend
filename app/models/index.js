@@ -11,8 +11,8 @@ const logger = require('../utils/logger');
 const ImageModel = require('./image');
 const UserModel = require('./user');
 const TokenModel = require('./token');
-const PostModel = require('./post');
-const EventModel = require('./event');
+const MemberModel = require('./member');
+const PaymentModel = require('./payment');
 
 const db = {};
 
@@ -55,8 +55,8 @@ const models = {
   user: UserModel(sequelize, Sequelize.DataTypes),
   token: TokenModel(sequelize, Sequelize.DataTypes),
   image: ImageModel(sequelize, Sequelize.DataTypes),
-  post: PostModel(sequelize, Sequelize.DataTypes),
-  event: EventModel(sequelize, Sequelize.DataTypes),
+  member: MemberModel(sequelize, Sequelize.DataTypes),
+  payment: PaymentModel(sequelize, Sequelize.DataTypes),
 };
 
 fs.readdirSync(__dirname)

@@ -4,14 +4,10 @@ const getConfig = require('../utils/getConfig');
 const logger = require('../utils/logger');
 
 const Users = require('./users');
-const Posts = require('./posts');
+const Members = require('./member');
 const Image = require('./image');
 const Token = require('./token');
-const Events = require('./events');
-const Tastimonials = require('./testimonials');
-const Archives = require('./archives');
-const Testimonial = require('./testimonials');
-const Archive = require('./archives');
+const Payments = require('./payment');
 
 /**
  * @description Start a new App instance.
@@ -25,20 +21,17 @@ function App(params = {}) {
   const token = new Token(params.jwtSecret);
   const image = new Image();
   const users = new Users(token, image);
-  const posts = new Posts(image);
-  const events = new Events(image);
-  const testimonials = new Testimonial(image);
-  const archives = new Archive(image);
+  const members = new Members(image);
+  const payments = new Payments();
 
   const _app = {
     config,
     image,
     users,
-    posts,
+    members,
     token,
-    events,
-    testimonials,
-    archives,
+    payments,
+
     start: async () => {
       // set wal mode
       await db.sequelize

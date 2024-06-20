@@ -4,36 +4,20 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
     static associate(models) {
-      Image.belongsTo(models.Event, {
+      Image.belongsTo(models.User, {
         foreignKey: 'imageable_id',
         constraints: false,
-        as: 'event',
+        as: 'user',
         scope: {
-          imageable_type: 'event',
+          imageable_type: 'user',
         },
       });
-      Image.belongsTo(models.Post, {
+      Image.belongsTo(models.Member, {
         foreignKey: 'imageable_id',
         constraints: false,
-        as: 'post',
+        as: 'member',
         scope: {
-          imageable_type: 'post',
-        },
-      });
-      Image.belongsTo(models.Archive, {
-        foreignKey: 'imageable_id',
-        constraints: false,
-        as: 'archive',
-        scope: {
-          imageable_type: 'archive',
-        },
-      });
-      Image.belongsTo(models.Testimonial, {
-        foreignKey: 'imageable_id',
-        constraints: false,
-        as: 'testimonial',
-        scope: {
-          imageable_type: 'testimonial',
+          imageable_type: 'member',
         },
       });
     }
@@ -82,24 +66,13 @@ module.exports = (sequelize, DataTypes) => {
   Image.addHook('afterFind', (findResult) => {
     if (!Array.isArray(findResult)) findResult = [findResult];
     for (const instance of findResult) {
-      if (instance.imageable_type === 'event' && instance.event !== undefined) {
-        delete instance.imageable;
-        delete instance.dataValues.imageable;
-      }
-      if (instance.imageable_type === 'post' && instance.post !== undefined) {
+      if (instance.imageable_type === 'user' && instance.user !== undefined) {
         delete instance.imageable;
         delete instance.dataValues.imageable;
       }
       if (
-        instance.imageable_type === 'archive' &&
-        instance.archive !== undefined
-      ) {
-        delete instance.imageable;
-        delete instance.dataValues.imageable;
-      }
-      if (
-        instance.imageable_type === 'testimonial' &&
-        instance.testimonial !== undefined
+        instance.imageable_type === 'member' &&
+        instance.member !== undefined
       ) {
         delete instance.imageable;
         delete instance.dataValues.imageable;
